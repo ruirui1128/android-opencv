@@ -30,7 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="转换" />
+            android:text="初始化" />
 
 
         <ImageView
@@ -38,7 +38,8 @@
             android:layout_width="wrap_content"
             android:layout_height="300dp"
             android:layout_gravity="center_horizontal"
-            android:src="@drawable/gril" />
+            android:visibility="gone"
+            tools:src="@drawable/gril" />
 
 
         <Button
@@ -46,7 +47,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="转换" />
+            android:text="加载模型" />
 
 
         <ImageView
@@ -54,7 +55,33 @@
             android:layout_width="wrap_content"
             android:layout_height="300dp"
             android:layout_gravity="center_horizontal"
-            android:src="@drawable/gril" />
+            android:src="@drawable/gril"
+            android:visibility="visible" />
+
+
+        <Button
+            android:id="@+id/btn3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="录入菜品" />
+
+
+        <Button
+            android:id="@+id/btn4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="加载到内存" />
+
+
+        <Button
+            android:id="@+id/btn5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="开始识别" />
+
     </androidx.appcompat.widget.LinearLayoutCompat>
 
 
