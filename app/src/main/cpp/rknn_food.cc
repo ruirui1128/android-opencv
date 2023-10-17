@@ -11,7 +11,7 @@
 #include "object_tracker/track_link.h"
 #include <android/log.h>
 
-rknn_context ctx = 0;
+rknn_context ctx_food = 0;
 unsigned char *model;
 int model_len = 0;
 int ret;
@@ -43,14 +43,9 @@ static double calculateCosineSimilarity(const cv::Mat &vector1, const cv::Mat &v
 }
 
 
-int test() {
-    return 0;
-}
-
-
 int initFoodModel(const char *model_path) {
     model = load_model(model_path, &model_len);
-    ret = rknn_init(&ctx, model, model_len, 0, NULL);
+    ret = rknn_init(&ctx_food, model, model_len, 0, NULL);
     if (ret < 0) {
         printf("rknn_init fail! ret=%d\n", ret);
         LOGI("RKNN rknn_init fail! ret=%d\n", ret);
@@ -58,7 +53,7 @@ int initFoodModel(const char *model_path) {
     }
 
     // rknn_input_output_num io_num;
-    ret = rknn_query(ctx, RKNN_QUERY_IN_OUT_NUM, &io_num, sizeof(io_num));
+    ret = rknn_query(ctx_food, RKNN_QUERY_IN_OUT_NUM, &io_num, sizeof(io_num));
     if (ret != RKNN_SUCC) {
         printf("rknn_query fail! ret=%d\n", ret);
         LOGI("rknn_query fail! ret=%d\n", ret);
@@ -71,7 +66,8 @@ int initFoodModel(const char *model_path) {
     memset(input_attrs, 0, sizeof(input_attrs));
     for (int i = 0; i < io_num.n_input; i++) {
         input_attrs[i].index = i;
-        ret = rknn_query(ctx, RKNN_QUERY_INPUT_ATTR, &(input_attrs[i]), sizeof(rknn_tensor_attr));
+        ret = rknn_query(ctx_food, RKNN_QUERY_INPUT_ATTR, &(input_attrs[i]),
+                         sizeof(rknn_tensor_attr));
         if (ret != RKNN_SUCC) {
             printf("rknn_query fail! ret=%d\n", ret);
             return -1;
@@ -84,7 +80,8 @@ int initFoodModel(const char *model_path) {
     memset(output_attrs, 0, sizeof(output_attrs));
     for (int i = 0; i < io_num.n_output; i++) {
         output_attrs[i].index = i;
-        ret = rknn_query(ctx, RKNN_QUERY_OUTPUT_ATTR, &(output_attrs[i]), sizeof(rknn_tensor_attr));
+        ret = rknn_query(ctx_food, RKNN_QUERY_OUTPUT_ATTR, &(output_attrs[i]),
+                         sizeof(rknn_tensor_attr));
         if (ret != RKNN_SUCC) {
             printf("rknn_query fail! ret=%d\n", ret);
             return -1;
@@ -157,15 +154,14 @@ cv::Mat processImage(jlong matAddr) {
     inputs[0].fmt = RKNN_TENSOR_NHWC;
     inputs[0].buf = img.data;
 
-    ret = rknn_inputs_set(ctx, io_num.n_input, inputs);
+    ret = rknn_inputs_set(ctx_food, io_num.n_input, inputs);
     if (ret < 0) {
         printf("rknn_input_set fail! ret=%d\n", ret);
 
     }
 
-    // Run
-    printf("rknn_run\n");
-    ret = rknn_run(ctx, nullptr);
+
+    ret = rknn_run(ctx_food, nullptr);
     if (ret < 0) {
         printf("rknn_run fail! ret=%d\n", ret);
 
@@ -176,7 +172,7 @@ cv::Mat processImage(jlong matAddr) {
 
     memset(outputs, 0, sizeof(outputs));
     outputs[0].want_float = 1;
-    ret = rknn_outputs_get(ctx, 1, outputs, NULL);
+    ret = rknn_outputs_get(ctx_food, 1, outputs, NULL);
     if (ret < 0) {
         printf("rknn_outputs_get fail! ret=%d\n", ret);
 
@@ -197,7 +193,7 @@ cv::Mat processImage(jlong matAddr) {
     // printf("Mat2::");
     // std::cout << "Output Mat:\n" << outputMat << std::endl;
 
-    rknn_outputs_release(ctx, 1, outputs);
+    rknn_outputs_release(ctx_food, 1, outputs);
     return outputMat;
 }
 
@@ -268,10 +264,10 @@ void readMatVectorsFromXML(const std::string &file_path) {
     fs.release();
 }
 
-void recognize(jlong matAddr) {
+std::pair<double, std::string> recognize(jlong matAddr) {
     cv::Mat outputMat = processImage(matAddr);
-    const std::pair<double, std::string> &pair = matScores(outputMat, 0.72);
-    LOGI("=================recognize============Pair: %f, %s", pair.first, pair.second.c_str());
+    return matScores(outputMat, 0.72);
+//    LOGI("=================recognize============Pair: %f, %s", pair.first, pair.second.c_str());
 }
 
 

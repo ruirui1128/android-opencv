@@ -47,7 +47,7 @@ void readMatVectorsFromXML(const std::string &file_path);
 
 //void readMatVectors(const std::string &file_path);
 
-void recognize(jlong matAddr);
+std::pair<double, std::string> recognize(jlong matAddr);
 
 std::pair<double, std::string> matScores(
                                          cv::Mat &outputMat,

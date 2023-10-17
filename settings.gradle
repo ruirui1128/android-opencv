@@ -17,3 +17,4 @@ rootProject.name = "OpenCvTest"
 include ':app'
 include ':opencv'
 project(':opencv').projectDir = new File(opencvsdk + '/opencv')
+include ':TestMakeLib'
