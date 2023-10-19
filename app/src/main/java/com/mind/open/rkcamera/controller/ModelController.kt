@@ -134,16 +134,20 @@ class ModelController(private val activity: Activity) {
         }
 
         private fun cutBitmap(bitmap: Bitmap, rg: InferenceResult.Recognition): Bitmap? {
-            val rectF = rg.location ?: return null
-            // 获取原始图像的宽度和高度
-            val imageWidth = bitmap.width
-            val imageHeight = bitmap.height
-            val left = (rectF.left * imageWidth).toInt()
-            val top = (rectF.top * imageHeight).toInt()
-            val right = (rectF.right * imageWidth).toInt()
-            val bottom = (rectF.bottom * imageHeight).toInt()
-            val rect = Rect(left, top, right, bottom)
-            return Bitmap.createBitmap(bitmap, rect.left, rect.top, rect.width(), rect.height())
+           try {
+               val rectF = rg.location ?: return null
+               // 获取原始图像的宽度和高度
+               val imageWidth = bitmap.width
+               val imageHeight = bitmap.height
+               val left = (rectF.left * imageWidth).toInt()
+               val top = (rectF.top * imageHeight).toInt()
+               val right = (rectF.right * imageWidth).toInt()
+               val bottom = (rectF.bottom * imageHeight).toInt()
+               val rect = Rect(left, top, right, bottom)
+               return Bitmap.createBitmap(bitmap, rect.left, rect.top, rect.width(), rect.height())
+           }catch (e: Exception) {
+               return null
+           }
         }
 
         private fun byteConvertBitmap(previewData: ByteArray): Bitmap {

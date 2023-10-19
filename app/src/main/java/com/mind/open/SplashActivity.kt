@@ -27,7 +27,7 @@ class SplashActivity : AppCompatActivity() {
         binding = ActivitySplashBinding.inflate(layoutInflater)
         rkPresenter = RkPresenter(this)
         RKnnJni.jni
-        TestJni.jni
+        //TestJni.jni
         setContentView(binding.root)
         thread {
             setProgressText("步骤一: 加载模型平台")
